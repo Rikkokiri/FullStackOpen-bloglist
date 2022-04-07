@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 /** Define a dummy function that receives an array of blog posts as a parameter
  * and always returns the value 1.
  */
@@ -33,8 +35,29 @@ const favoriteBlog = (blogs) => {
   };
 };
 
+/**
+ * Define a function called mostBlogs that receives an array of blogs as a parameter.
+ * The function returns the author who has the largest amount of blogs.
+ * The return value also contains the number of blogs the top author has:
+ * {
+ *  author: "...",
+ *  blogs: {number of blogs}
+ * }
+ */
+
+const mostBlogs = (blogs) => {
+  return _.chain(blogs)
+    .countBy('author')
+    .transform((result, value, key) => {
+      result.push({ author: key, blogs: value });
+    }, [])
+    .maxBy('blogs')
+    .value();
+};
+
 module.exports = {
   dummy,
   favoriteBlog,
+  mostBlogs,
   totalLikes,
 };
