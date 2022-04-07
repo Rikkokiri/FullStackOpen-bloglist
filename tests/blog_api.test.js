@@ -63,10 +63,6 @@ test('new blog post is saved to the database', async () => {
   expect(titles).toContain(newBlog.title);
 });
 
-/**
- * Write a test that verifies that if the likes property is missing from the request,
- * it will default to the value 0. Do not test the other properties of the created blogs yet.
- */
 test('blog likes will default to value 0', async () => {
   const newBlog = {
     title: 'About coding the FizzBuzz interview question',
@@ -80,6 +76,16 @@ test('blog likes will default to value 0', async () => {
     .expect(201)
     .expect('Content-Type', /application\/json/);
   expect(response.body.likes).toEqual(0);
+});
+
+test('blog without url and title will be rejected', async () => {
+  const newBlog = {
+    author: 'Unknown blogger',
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(400);
+  const blogsAfter = await helper.blogsInDB();
+  expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
 });
 
 afterAll(() => {
