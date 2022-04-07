@@ -7,6 +7,7 @@ const blogsRouter = require('./controllers/blogs');
 const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
 
+logger.info(`Running in ${process.env.NODE_ENV} mode`);
 logger.info('Connecting to', config.MONGO_URL);
 
 mongoose
