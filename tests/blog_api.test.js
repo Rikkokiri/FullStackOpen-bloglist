@@ -37,6 +37,12 @@ test('specific blog post is within returned posts', async () => {
   expect(titles).toContain('Go To Statement Considered Harmful');
 });
 
+test('blog identifier is called id', async () => {
+  const response = await api.get('/api/blogs');
+  const blog = response.body[0];
+  expect(blog.id).toBeDefined();
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
