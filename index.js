@@ -7,26 +7,22 @@ const mongoose = require('mongoose');
 const config = require('./utils/config');
 const logger = require('./utils/logger');
 const Blog = require('./models/blog');
+const blogsRouter = require('./controllers/blogs');
 
-const mongoUrl = config.MONGO_URL;
-mongoose.connect(mongoUrl);
+logger.info('Connecting to', config.MONGO_URL);
+
+mongoose
+  .connect(config.MONGO_URL)
+  .then(() => {
+    logger.info('Connected to MongoDB');
+  })
+  .catch((error) => {
+    logger.error('Error connecting to MongoDB:', error.message);
+  });
 
 app.use(cors());
 app.use(express.json());
-
-app.get('/api/blogs', (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs);
-  });
-});
-
-app.post('/api/blogs', (request, response) => {
-  const blog = new Blog(request.body);
-
-  blog.save().then((result) => {
-    response.status(201).json(result);
-  });
-});
+app.use('/api/blogs', blogsRouter);
 
 const PORT = config.PORT || 3003;
 app.listen(PORT, () => {

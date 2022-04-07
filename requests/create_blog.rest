@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Best Blog Post",
-    "author": "Best Blogger",
-    "url": "www.bestblog.com/best-post-ever",
-    "likes": 10000
+    "title": "Worst Blog Post",
+    "author": "Worst Blogger",
+    "url": "www.worstblog.com/this-is-the-worst",
+    "likes": 0
 }
