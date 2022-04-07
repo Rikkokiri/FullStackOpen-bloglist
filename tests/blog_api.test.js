@@ -6,16 +6,12 @@ const Blog = require('../models/blog');
 const helper = require('./test_helper');
 
 beforeEach(async () => {
-  await Blog.deleteMany({});
-  Blog.insertMany(
-    helper.initialBlogs,
-    { ordered: false },
-    function (error, _docs) {
-      if (error) {
-        throw Error('Initializing database failed!');
-      }
-    }
-  );
+  try {
+    await Blog.deleteMany({});
+    await Blog.insertMany(helper.initialBlogs, { ordered: false });
+  } catch (error) {
+    console.log('Error initalizing database', error);
+  }
 });
 
 test('blog posts are returned as json', async () => {
