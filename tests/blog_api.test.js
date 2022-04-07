@@ -1,4 +1,3 @@
-const { beforeEach, expect } = require('@jest/globals');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
@@ -62,6 +61,25 @@ test('new blog post is saved to the database', async () => {
 
   const titles = blogsAfter.map((b) => b.title);
   expect(titles).toContain(newBlog.title);
+});
+
+/**
+ * Write a test that verifies that if the likes property is missing from the request,
+ * it will default to the value 0. Do not test the other properties of the created blogs yet.
+ */
+test('blog likes will default to value 0', async () => {
+  const newBlog = {
+    title: 'About coding the FizzBuzz interview question',
+    author: 'Michele Riva',
+    url: 'https://micheleriva.medium.com/about-coding-the-fizzbuzz-interview-question-9bcd08d9dfe5',
+  };
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+  expect(response.body.likes).toEqual(0);
 });
 
 afterAll(() => {
