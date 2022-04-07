@@ -22,16 +22,10 @@ const totalLikes = (blogs) => {
  */
 const favoriteBlog = (blogs) => {
   if (blogs.length === 0) return undefined;
-
-  const favorite = blogs.reduce((prev, curr) =>
-    prev.likes > curr.likes ? prev : curr
-  );
-
-  return {
-    title: favorite.title,
-    author: favorite.author,
-    likes: favorite.likes,
-  };
+  return _.chain(blogs)
+    .reduce((prev, curr) => (prev.likes > curr.likes ? prev : curr))
+    .pick(['title', 'author', 'likes'])
+    .value();
 };
 
 /**
