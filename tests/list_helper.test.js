@@ -1,5 +1,3 @@
-const { expect } = require('@jest/globals');
-const { describe } = require('yargs');
 const listHelper = require('../utils/list_helper');
 
 test('dummy returns one', () => {
@@ -82,5 +80,27 @@ describe('total likes', () => {
 
   test('of a bigger list is calculated right', () => {
     expect(listHelper.totalLikes(blogs)).toBe(36);
+  });
+});
+
+describe('favorite blog', () => {
+  test('of empty list is undefined', () => {
+    expect(listHelper.favoriteBlog([])).toBe(undefined);
+  });
+
+  test('when list has only one blog that is returned', () => {
+    expect(listHelper.favoriteBlog(listWithOneBlog)).toEqual({
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      likes: 5,
+    });
+  });
+
+  test('any of the blogs with most likes is returned', () => {
+    expect(listHelper.favoriteBlog(blogs)).toEqual({
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      likes: 12,
+    });
   });
 });
