@@ -43,6 +43,27 @@ test('blog identifier is called id', async () => {
   expect(blog.id).toBeDefined();
 });
 
+test('new blog post is saved to the database', async () => {
+  const newBlog = {
+    title: 'How a Web Design Goes Straight to Hell',
+    author: 'Matthew Inman',
+    url: 'https://theoatmeal.com/comics/design_hell',
+    likes: 100,
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAfter = await helper.blogsInDB();
+  expect(blogsAfter).toHaveLength(helper.initialBlogs.length + 1);
+
+  const titles = blogsAfter.map((b) => b.title);
+  expect(titles).toContain(newBlog.title);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
