@@ -1,3 +1,4 @@
+const { expect } = require('@jest/globals');
 const listHelper = require('../utils/list_helper');
 
 test('dummy returns one', () => {
@@ -122,5 +123,27 @@ describe('most blogs', () => {
       author: 'Robert C. Martin',
       blogs: 3,
     });
+  });
+});
+
+describe('most likes', () => {
+  test('of empty list is undefined', () => {
+    expect(listHelper.mostLikes([])).toBe(undefined);
+  });
+
+  test('when list has one blog its author and like count are returned', () => {
+    expect(listHelper.mostLikes(listWithOneBlog)).toEqual({
+      author: 'Edsger W. Dijkstra',
+      likes: 5,
+    });
+  });
+
+  test('author whose blogs alltogether have most likes is returned', () => {
+    expect(
+      listHelper.mostLikes(blogs).toEqual({
+        author: 'Edsger W. Dijkstra',
+        likes: 17,
+      })
+    );
   });
 });

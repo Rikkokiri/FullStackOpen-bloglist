@@ -46,6 +46,8 @@ const favoriteBlog = (blogs) => {
  */
 
 const mostBlogs = (blogs) => {
+  if (blogs.length === 0) return undefined;
+
   return _.chain(blogs)
     .countBy('author')
     .transform((result, value, key) => {
@@ -55,9 +57,25 @@ const mostBlogs = (blogs) => {
     .value();
 };
 
+/**
+ * Returns the author, whose blog posts have the largest amount of likes.
+ * The return value also contains the total number of likes that the author has received:
+ * {
+ *  author: "...",
+ *  likes: { sum of likes }
+ * }
+ */
+
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) return undefined;
+
+  return {};
+};
+
 module.exports = {
   dummy,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
   totalLikes,
 };
