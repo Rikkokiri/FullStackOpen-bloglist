@@ -20,7 +20,6 @@ const totalLikes = (blogs) => {
  * The function finds out which blog has most likes. If there are many top favorites,
  * it is enough to return one of them.
  */
-
 const favoriteBlog = (blogs) => {
   if (blogs.length === 0) return undefined;
 
@@ -44,7 +43,6 @@ const favoriteBlog = (blogs) => {
  *  blogs: {number of blogs}
  * }
  */
-
 const mostBlogs = (blogs) => {
   if (blogs.length === 0) return undefined;
 
@@ -65,11 +63,18 @@ const mostBlogs = (blogs) => {
  *  likes: { sum of likes }
  * }
  */
-
 const mostLikes = (blogs) => {
   if (blogs.length === 0) return undefined;
-
-  return {};
+  return _.chain(blogs)
+    .groupBy('author')
+    .transform((result, blogsByAuthor, author) => {
+      result.push({
+        author: author,
+        likes: _.sumBy(blogsByAuthor, 'likes'),
+      });
+    }, [])
+    .maxBy('likes')
+    .value();
 };
 
 module.exports = {
