@@ -113,7 +113,23 @@ describe('creating a new blog post', () => {
 });
 
 describe('deleting a blog post', () => {
-  test.skip('succeeds with status code 204 if id is valid', async () => {});
+  test('succeeds with status code 204 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToDelete = blogsAtStart[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAfter = await helper.blogsInDB();
+    expect(blogsAfter).toHaveLength(helper.initialBlogs.length - 1);
+  });
+
+  test('fails with status code 400 if id is invalid', async () => {
+    await api.delete(`/api/blogs/totallyinvalidid`).expect(400);
+  });
+
+  test('succeeds with code 204 even if blog does not exist (but id is valid)', async () => {
+    const validNonexistantId = await helper.nonExistingId();
+    await api.delete(`/api/blogs/${validNonexistantId}`).expect(204);
+  });
 });
 
 afterAll(() => {
