@@ -41,11 +41,27 @@ describe('when there is initially some blog posts saved', () => {
 });
 
 describe('viewing a specific blog post', () => {
-  test.skip('succeeds when id is valid', async () => {});
+  test('succeeds when id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToRequest = blogsAtStart[0];
 
-  test.skip('fails with statuscode 404 if blog post does not exist', async () => {});
+    const resultBlog = await api
+      .get(`/api/blogs/${blogToRequest.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-  test.skip('fails with statuscode 400 id is invalid', async () => {});
+    const processedBlogToRequest = JSON.parse(JSON.stringify(blogToRequest));
+    expect(resultBlog.body).toEqual(processedBlogToRequest);
+  });
+
+  test('fails with statuscode 404 if blog post does not exist', async () => {
+    const validNonexistantId = await helper.nonExistingId();
+    await api.get(`/api/blogs/${validNonexistantId}`).expect(404);
+  });
+
+  test('fails with statuscode 400 id is invalid', async () => {
+    await api.get('/api/blogs/thisiscertainlynotvalidid').expect(400);
+  });
 });
 
 describe('creating a new blog post', () => {
