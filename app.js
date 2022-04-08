@@ -1,5 +1,6 @@
 const config = require('./utils/config');
 const express = require('express');
+require('express-async-errors'); // Eliminates try-catch
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
