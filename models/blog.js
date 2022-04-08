@@ -1,9 +1,18 @@
 const mongoose = require('mongoose');
 
 const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
+  title: {
+    type: String,
+    required: [true, 'Title of blog post missing'],
+  },
+  author: {
+    type: String,
+    required: [true, "Author's name missing"],
+  },
+  url: {
+    type: String,
+    required: [true, 'Blog post url is missing'],
+  },
   likes: {
     type: Number,
     min: 0,

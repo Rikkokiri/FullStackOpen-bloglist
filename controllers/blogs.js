@@ -9,18 +9,6 @@ blogsRouter.get('/', async (_request, response) => {
 blogsRouter.post('/', async (request, response, next) => {
   const body = request.body;
 
-  if (!body.title) {
-    return response.status(400).json({
-      error: 'Missing blog post title',
-    });
-  }
-
-  if (!body.url) {
-    return response.status(400).json({
-      error: 'Missing blog post url',
-    });
-  }
-
   const blog = new Blog({
     likes: body.likes || 0,
     ...body,
@@ -57,6 +45,37 @@ blogsRouter.delete('/:id', async (request, response, next) => {
 
 blogsRouter.patch('/:id', async (request, response, next) => {
   const body = request.body;
+
+  try {
+    const updated = await Blog.findByIdAndUpdate(request.params.id, body, {
+      new: true,
+      runValidators: true,
+    });
+    if (updated) {
+      response.json(updated.toJSON());
+    } else {
+      response.status(404).end();
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogsRouter.put('/:id', async (request, response, next) => {
+  const body = request.body;
+
+  let errors = [];
+  if (!body.author) errors.push('Author name missing');
+  if (!body.title) errors.push('Title missing');
+  if (!body.url) errors.push('Blog url missing');
+  if (!body.likes) errors.push('Like count missing');
+
+  if (errors.length > 0) {
+    response
+      .status(400)
+      .json({ error: errors.join(' ') })
+      .end();
+  }
 
   try {
     const updated = await Blog.findByIdAndUpdate(request.params.id, body, {

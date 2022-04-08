@@ -179,21 +179,74 @@ describe('updating part of a blog post', () => {
 });
 
 describe('updating whole blog post', () => {
-  test.skip('whole blog posts can be updated', async () => {
+  const newBlogDetails = {
+    author: 'Ryan Donovan',
+    title: 'You should be reading academic computer science papers',
+    url: 'https://stackoverflow.blog/2022/04/07/you-should-be-reading-academic-computer-science-papers/',
+    likes: 303,
+  };
+
+  test('blog update with PUT succeeds if all fields (expect id) are present', async () => {
     const blogsAtStart = await helper.blogsInDB();
     const blogToUpdate = blogsAtStart[1];
 
-    const newBlogDetails = {
-      author: '',
-      title: '',
-      url: '',
-      likes: 303,
-    };
+    const updatedBlog = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(newBlogDetails)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-    // const updatedBlog = await api.put(`/api/blogs/${blogToUpdate.id}`).expect()
+    expect(updatedBlog.body.id);
+    expect(updatedBlog.body).toEqual({
+      id: blogToUpdate.id,
+      ...newBlogDetails,
+    });
+
+    const blogsAfter = await helper.blogsInDB();
+    const titles = blogsAfter.map((b) => b.title);
+    expect(titles).toContain(newBlogDetails.title);
+    expect(titles).not.toContain(blogToUpdate.title);
   });
-  test.skip('blog update with PUT succeeds if all fields (expect id) are present', async () => {});
-  test.skip('put request fails with code 400 if field is missing', async () => {});
+
+  test('put request fails with code 400 if field is missing', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToUpdate = blogsAtStart[1];
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({
+        author: 'Ryan Donovan',
+        // title: 'You should be reading academic computer science papers',
+        url: 'https://stackoverflow.blog/2022/04/07/you-should-be-reading-academic-computer-science-papers/',
+        likes: 0,
+      })
+      .expect(400);
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({
+        author: 'Some author',
+        title: 'Some title',
+        likes: 100,
+      })
+      .expect(400);
+  });
+
+  test('put request for non-existant id fails with code 404', async () => {
+    const validNonexistantId = await helper.nonExistingId();
+
+    await api
+      .put(`/api/blogs/${validNonexistantId}`)
+      .send(newBlogDetails)
+      .expect(404);
+  });
+
+  test('if id is invalid, put fails with code 400', async () => {
+    await api
+      .put(`/api/blogs/totallyinvalidid`)
+      .send(newBlogDetails)
+      .expect(400);
+  });
 });
 
 afterAll(() => {
