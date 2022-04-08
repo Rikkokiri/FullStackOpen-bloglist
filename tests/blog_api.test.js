@@ -138,11 +138,11 @@ describe('updating part of a blog post', () => {
     const blogToUpdate = blogsAtStart[1];
     const updated = await api
       .patch(`/api/blogs/${blogToUpdate.id}`)
-      .send({ likes: 1000 })
+      .send({ likes: 0 })
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
-    expect(updated.body.likes).toEqual(1000);
+    expect(updated.body.likes).toEqual(0);
   });
 
   test('likes cannot be set to value below 0', async () => {
