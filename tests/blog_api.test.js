@@ -132,6 +132,70 @@ describe('deleting a blog post', () => {
   });
 });
 
+describe('updating part of a blog post', () => {
+  test('blog posts likes can be updated with patch', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToUpdate = blogsAtStart[1];
+    const updated = await api
+      .patch(`/api/blogs/${blogToUpdate.id}`)
+      .send({ likes: 1000 })
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(updated.body.likes).toEqual(1000);
+  });
+
+  test('likes cannot be set to value below 0', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToUpdate = blogsAtStart[1];
+    await api
+      .patch(`/api/blogs/${blogToUpdate.id}`)
+      .send({ likes: -100 })
+      .expect(400);
+  });
+
+  test('only provided fields change with patch update', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToUpdate = blogsAtStart[1];
+    const newAuthor = 'Anonymous Author';
+    const updated = await api
+      .patch(`/api/blogs/${blogToUpdate.id}`)
+      .send({ author: newAuthor })
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(updated.body.author).toEqual(newAuthor);
+    expect(updated.body.likes).toEqual(blogToUpdate.likes);
+  });
+
+  test('fails with statuscode 404 if blog post does not exist', async () => {
+    const validNonexistantId = await helper.nonExistingId();
+    await api.patch(`/api/blogs/${validNonexistantId}`).expect(404);
+  });
+
+  test('fails with status code 400 if id is invalid', async () => {
+    await api.patch(`/api/blogs/totallyinvalidid`).expect(400);
+  });
+});
+
+describe('updating whole blog post', () => {
+  test.skip('whole blog posts can be updated', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToUpdate = blogsAtStart[1];
+
+    const newBlogDetails = {
+      author: '',
+      title: '',
+      url: '',
+      likes: 303,
+    };
+
+    // const updatedBlog = await api.put(`/api/blogs/${blogToUpdate.id}`).expect()
+  });
+  test.skip('blog update with PUT succeeds if all fields (expect id) are present', async () => {});
+  test.skip('put request fails with code 400 if field is missing', async () => {});
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
