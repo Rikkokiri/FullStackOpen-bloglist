@@ -3,7 +3,6 @@ const supertest = require('supertest');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
-const User = require('../models/user');
 const helper = require('./test_helper');
 
 beforeEach(async () => {
@@ -12,9 +11,7 @@ beforeEach(async () => {
     await Blog.insertMany(helper.initialBlogs, { ordered: false });
 
     // Add user to database (so there is a user that can be attached to blogs)
-    await User.deleteMany({});
-    const user = await helper.initialUser();
-    await user.save();
+    await helper.initDbWithOneUser(helper.initialUser);
   } catch (error) {
     console.log('Error initalizing database', error);
   }
@@ -71,16 +68,18 @@ describe('viewing a specific blog post', () => {
 });
 
 describe('creating a new blog post', () => {
-  test('new blog post is saved to the database', async () => {
+  test('new blog post is saved and associated with submitting user', async () => {
     const newBlog = {
       title: 'How a Web Design Goes Straight to Hell',
       author: 'Matthew Inman',
       url: 'https://theoatmeal.com/comics/design_hell',
       likes: 100,
     };
+    const [user, ..._] = await helper.usersInDB();
 
-    await api
+    const response = await api
       .post('/api/blogs')
+      .set('Authorization', helper.createToken(user.username, user.id))
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -90,6 +89,8 @@ describe('creating a new blog post', () => {
 
     const titles = blogsAfter.map((b) => b.title);
     expect(titles).toContain(newBlog.title);
+
+    expect(response.body.user.id).toEqual(user.id);
   });
 
   test('blog likes will default to value 0', async () => {
@@ -98,9 +99,11 @@ describe('creating a new blog post', () => {
       author: 'Michele Riva',
       url: 'https://micheleriva.medium.com/about-coding-the-fizzbuzz-interview-question-9bcd08d9dfe5',
     };
+    const [user, ..._] = await helper.usersInDB();
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', helper.createToken(user.username, user.id))
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -111,10 +114,33 @@ describe('creating a new blog post', () => {
     const newBlog = {
       author: 'Unknown blogger',
     };
+    const [user, ..._] = await helper.usersInDB();
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .set('Authorization', helper.createToken(user.username, user.id))
+      .send(newBlog)
+      .expect(400);
     const blogsAfter = await helper.blogsInDB();
     expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test.only('request without valid token fails', async () => {
+    const newBlog = {
+      title: 'How a Web Design Goes Straight to Hell',
+      author: 'Matthew Inman',
+      url: 'https://theoatmeal.com/comics/design_hell',
+      likes: 100,
+    };
+    const [user, ...rest] = await helper.usersInDB();
+
+    await api.post('/api/blogs').send(newBlog).expect(401);
+
+    const blogsAfter = await helper.blogsInDB();
+    expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
+
+    const titles = blogsAfter.map((b) => b.title);
+    expect(titles).not.toContain(newBlog.title);
   });
 });
 
