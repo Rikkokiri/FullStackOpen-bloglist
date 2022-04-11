@@ -76,7 +76,6 @@ describe('creating a new blog post', () => {
       likes: 100,
     };
     const [user, ..._] = await helper.usersInDB();
-
     const response = await api
       .post('/api/blogs')
       .set('Authorization', helper.createToken(user.username, user.id))
@@ -90,7 +89,8 @@ describe('creating a new blog post', () => {
     const titles = blogsAfter.map((b) => b.title);
     expect(titles).toContain(newBlog.title);
 
-    expect(response.body.user.id).toEqual(user.id);
+    const processedUser = JSON.parse(JSON.stringify(user));
+    expect(response.body.user).toEqual(processedUser.id);
   });
 
   test('blog likes will default to value 0', async () => {
@@ -125,7 +125,7 @@ describe('creating a new blog post', () => {
     expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
   });
 
-  test.only('request without valid token fails', async () => {
+  test('request without valid token fails', async () => {
     const newBlog = {
       title: 'How a Web Design Goes Straight to Hell',
       author: 'Matthew Inman',
