@@ -239,6 +239,15 @@ describe('updating whole blog post', () => {
       })
       .expect(400);
 
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({
+        title: 'One more new title',
+        url: 'somegreatblog.com',
+        likes: 3000,
+      })
+      .expect(400);
+
     const blogsAfter = await helper.blogsInDB();
     const blogAttemptedToUpdate = blogsAfter.find(
       (b) => b.id === blogToUpdate.id
