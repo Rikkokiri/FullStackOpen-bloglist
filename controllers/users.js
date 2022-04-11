@@ -3,7 +3,8 @@ const usersRouter = require('express').Router();
 const User = require('../models/user');
 
 usersRouter.get('/', async (_request, response) => {
-  const users = await User.find({});
+  // TODO: Populating posts / blogs does not work
+  const users = await User.find({}).populate({ path: 'posts', model: 'Blog' });
   response.json(users);
 });
 
@@ -39,6 +40,16 @@ usersRouter.post('/', async (request, response) => {
 
   const savedUser = await user.save();
   response.status(201).json(savedUser);
+});
+
+usersRouter.get('/:id', async (request, response) => {
+  const user = await User.findById(request.params.id).populate('posts');
+
+  if (user) {
+    response.json(user.toJSON());
+  } else {
+    response.status(404).end();
+  }
 });
 
 // usersRouter.delete('/:id', ...)
