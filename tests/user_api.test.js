@@ -1,5 +1,5 @@
-const { beforeEach, expect } = require('@jest/globals');
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
 const api = supertest(app);
@@ -48,5 +48,99 @@ describe('when there is initially one user in db', () => {
     expect(usernames).toContain(newUser.username);
   });
 
-  test.skip('creation fails with proper statuscode and message if username already taken', async () => {});
+  test('creation fails with proper statuscode and message if username already taken', async () => {
+    const userAtStart = await helper.usersInDB();
+    const newUser = {
+      username: 'root',
+      name: 'James Bond',
+      password: 'topsecret',
+    };
+
+    await api.post('/api/users').send(newUser).expect(400);
+
+    const usersAtEnd = await helper.usersInDB();
+    expect(usersAtEnd).toHaveLength(userAtStart.length);
+    const names = usersAtEnd.map((u) => u?.name);
+    expect(names).not.toContain(newUser.name);
+  });
+});
+
+describe('creating user', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+  });
+
+  test('succeeds without name of user (different from username)', async () => {
+    const userAtStart = await helper.usersInDB();
+    const newUser = {
+      username: 'agent007',
+      password: 'topsecret',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await helper.usersInDB();
+    expect(usersAtEnd).toHaveLength(userAtStart.length + 1);
+    const usernames = usersAtEnd.map((u) => u.username);
+    expect(usernames).toContain(newUser.username);
+  });
+
+  test('fails if password is too short', async () => {
+    const userAtStart = await helper.usersInDB();
+    await api
+      .post('/api/users')
+      .send({
+        username: 'agent007',
+        password: 'jk',
+      })
+      .expect(400);
+    const usersAtEnd = await helper.usersInDB();
+    expect(usersAtEnd).toHaveLength(userAtStart.length);
+  });
+
+  test('fails if username is too short', async () => {
+    const userAtStart = await helper.usersInDB();
+    await api
+      .post('/api/users')
+      .send({
+        username: 'ha',
+        password: 'somegreatpassword',
+      })
+      .expect(400);
+    const usersAtEnd = await helper.usersInDB();
+    expect(usersAtEnd).toHaveLength(userAtStart.length);
+  });
+
+  test('fails if password is missing', async () => {
+    const userAtStart = await helper.usersInDB();
+    const response = await api
+      .post('/api/users')
+      .send({
+        username: 'agent007',
+      })
+      .expect(400);
+    expect(response.body.error).toEqual('Password is required.');
+    const usersAtEnd = await helper.usersInDB();
+    expect(usersAtEnd).toHaveLength(userAtStart.length);
+  });
+
+  test('fails if username is missing', async () => {
+    const userAtStart = await helper.usersInDB();
+    const { body } = await api
+      .post('/api/users')
+      .send({
+        password: 'forgotprovideusername',
+      })
+      .expect(400);
+    const usersAtEnd = await helper.usersInDB();
+    expect(usersAtEnd).toHaveLength(userAtStart.length);
+  });
+});
+
+afterAll(() => {
+  mongoose.connection.close();
 });
