@@ -59,16 +59,16 @@ blogsRouter.put('/:id', async (request, response) => {
       .status(400)
       .json({ error: errors.join(' ') })
       .end();
-  }
-
-  const updated = await Blog.findByIdAndUpdate(request.params.id, body, {
-    new: true,
-    runValidators: true,
-  });
-  if (updated) {
-    response.json(updated.toJSON());
   } else {
-    response.status(404).end();
+    const updated = await Blog.findByIdAndUpdate(request.params.id, body, {
+      new: true,
+      runValidators: true,
+    });
+    if (updated) {
+      response.json(updated.toJSON());
+    } else {
+      response.status(404).end();
+    }
   }
 });
 

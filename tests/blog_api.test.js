@@ -216,7 +216,6 @@ describe('updating whole blog post', () => {
       .put(`/api/blogs/${blogToUpdate.id}`)
       .send({
         author: 'Ryan Donovan',
-        // title: 'You should be reading academic computer science papers',
         url: 'https://stackoverflow.blog/2022/04/07/you-should-be-reading-academic-computer-science-papers/',
         likes: 0,
       })
@@ -230,6 +229,21 @@ describe('updating whole blog post', () => {
         likes: 100,
       })
       .expect(400);
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({
+        author: 'Some author',
+        title: 'Some title',
+        url: 'testing.com',
+      })
+      .expect(400);
+
+    const blogsAfter = await helper.blogsInDB();
+    const blogAttemptedToUpdate = blogsAfter.find(
+      (b) => b.id === blogToUpdate.id
+    );
+    expect(blogToUpdate).toEqual(blogAttemptedToUpdate);
   });
 
   test('put request for non-existant id fails with code 404', async () => {
