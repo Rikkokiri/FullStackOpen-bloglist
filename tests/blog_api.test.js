@@ -3,12 +3,18 @@ const supertest = require('supertest');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const helper = require('./test_helper');
 
 beforeEach(async () => {
   try {
     await Blog.deleteMany({});
     await Blog.insertMany(helper.initialBlogs, { ordered: false });
+
+    // Add user to database (so there is a user that can be attached to blogs)
+    await User.deleteMany({});
+    const user = await helper.initialUser();
+    await user.save();
   } catch (error) {
     console.log('Error initalizing database', error);
   }
