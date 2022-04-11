@@ -11,7 +11,7 @@ beforeEach(async () => {
     await Blog.insertMany(helper.initialBlogs, { ordered: false });
 
     // Add user to database (so there is a user that can be attached to blogs)
-    await helper.initDbWithOneUser(helper.initialUser);
+    await helper.initDbWithUsers();
   } catch (error) {
     console.log('Error initalizing database', error);
   }
@@ -162,6 +162,10 @@ describe('deleting a blog post', () => {
     const validNonexistantId = await helper.nonExistingId();
     await api.delete(`/api/blogs/${validNonexistantId}`).expect(204);
   });
+
+  test.skip('can be done by user that created added the post', async () => {});
+
+  test.skip("fails if user attempts to delete someone else's post", async () => {});
 });
 
 describe('updating part of a blog post', () => {

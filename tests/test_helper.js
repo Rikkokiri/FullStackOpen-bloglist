@@ -77,21 +77,33 @@ const usersInDB = async () => {
   return users.map((user) => user.toJSON());
 };
 
-const initialUser = {
-  name: 'Test User',
-  username: 'root',
-  password: 'sekret',
-};
+const initialUsers = [
+  {
+    id: '625439e06676528bae335ae8',
+    name: 'Superuser',
+    username: 'root',
+    password: 'sekret',
+  },
+  {
+    id: '6254779e28f26363f88f24cb',
+    username: 'mikecheck',
+    name: 'Mike Check',
+    password: 'testingtesting',
+  },
+];
 
-const initDbWithOneUser = async (user) => {
+const initDbWithUsers = async () => {
   await User.deleteMany({});
-  const passwordHash = await bcrypt.hash(user.password, 10);
-  const newUser = new User({
-    name: user.name,
-    username: user.username,
-    passwordHash,
-  });
-  await newUser.save();
+  for (let user of initialUsers) {
+    let userObject = new User({
+      _id: user.id,
+      name: user.name,
+      username: user.username,
+      passwordHash: await bcrypt.hash(user.password, 10),
+      __v: 0,
+    });
+    await userObject.save();
+  }
 };
 
 const createToken = (username, userId) => {
@@ -104,10 +116,10 @@ const createToken = (username, userId) => {
 
 module.exports = {
   blogsInDB,
-  initDbWithOneUser,
+  initDbWithUsers,
   createToken,
   initialBlogs,
   nonExistingId,
   usersInDB,
-  initialUser,
+  initialUsers,
 };
