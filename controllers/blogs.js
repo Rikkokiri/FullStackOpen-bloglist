@@ -1,7 +1,5 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
-const User = require('../models/user');
-const jwt = require('jsonwebtoken');
 const { userExtractor } = require('../utils/middleware');
 
 blogsRouter.get('/', async (_request, response) => {
@@ -17,7 +15,7 @@ blogsRouter.get('/', async (_request, response) => {
  * Store a new blog post (requires token authentication)
  * User whose id is in the token will be associated with the post.
  */
-blogsRouter.post('/', userExtractor, async (request, response, next) => {
+blogsRouter.post('/', userExtractor, async (request, response) => {
   const body = request.body;
   const blog = new Blog({
     likes: body.likes || 0,
