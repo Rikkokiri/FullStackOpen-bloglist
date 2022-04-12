@@ -16,13 +16,16 @@ blogsRouter.get('/', async (_request, response) => {
  * User whose id is in the token will be associated with the post.
  */
 blogsRouter.post('/', userExtractor, async (request, response) => {
-  const body = request.body;
+  const { body, user } = request;
+  // const user = request.user;
   const blog = new Blog({
     likes: body.likes || 0,
-    user: request.user._id,
+    user: user._id,
     ...body,
   });
   const savedBlog = await blog.save();
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
   response.status(201).json(savedBlog);
 });
 

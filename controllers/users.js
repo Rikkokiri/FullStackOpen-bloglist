@@ -3,8 +3,7 @@ const usersRouter = require('express').Router();
 const User = require('../models/user');
 
 usersRouter.get('/', async (_request, response) => {
-  // TODO: Populating posts / blogs does not work
-  const users = await User.find({}).populate({ path: 'posts', model: 'Blog' });
+  const users = await User.find({}).populate('blogs');
   response.json(users);
 });
 
@@ -17,7 +16,7 @@ usersRouter.post('/', async (request, response) => {
   const existingUser = await User.findOne({ username });
 
   if (existingUser) {
-    return response.status(400).json({ error: 'Username must be unique.' });
+    return response.status(400).json({ error: 'Username is already taken.' });
   }
 
   if (!password) {
@@ -43,7 +42,7 @@ usersRouter.post('/', async (request, response) => {
 });
 
 usersRouter.get('/:id', async (request, response) => {
-  const user = await User.findById(request.params.id).populate('posts');
+  const user = await User.findById(request.params.id).populate('blogs');
 
   if (user) {
     response.json(user.toJSON());
