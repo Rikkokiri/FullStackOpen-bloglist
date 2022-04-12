@@ -9,7 +9,7 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand --forceExit",
     "test:dev": "cross-env NODE_ENV=test jest --watch --runInBand --forceExit",
-    "test:cov": "jest -c jest.config.js --collectCoverage"
+    "test:cov": "cross-env NODE_ENV=test jest --runInBand --forceExit --collectCoverage"
   },
   "repository": {
     "type": "git",
