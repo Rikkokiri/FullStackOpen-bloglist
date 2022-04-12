@@ -27,6 +27,25 @@ describe('when there is initially one user in db', () => {
     expect(response.body[0].passwordHash).not.toBeDefined();
   });
 
+  test('individual user can be requested', async () => {
+    const [user, ..._] = await helper.usersInDB();
+    const response = await api
+      .get(`/api/users/${user.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body).toEqual(user);
+  });
+
+  test('viewing nonexistant user fails with code 404', async () => {
+    const validNonexistantId = await helper.nonExistingId();
+    await api.get(`/api/users/${validNonexistantId}`).expect(404);
+  });
+
+  test('viewing user fails with code 400 if id is invalid', async () => {
+    await api.get('/api/users/invalidid').expect(400);
+  });
+
   test('creation succeeds with a fresh username', async () => {
     const userAtStart = await helper.usersInDB();
 
