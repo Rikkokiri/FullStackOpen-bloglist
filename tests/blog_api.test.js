@@ -196,14 +196,20 @@ describe('deleting a blog post', () => {
     expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
   });
 
-  test.skip('can be done by user that created the post', async () => {
+  test("fails if user attempts to delete someone else's post", async () => {
     const blogsAtStart = await helper.blogsInDB();
-    // const blogToDelete = blogsAtStart[0];
-  });
+    const blogToDelete = blogsAtStart[0];
+    const [creator, otherUser, ..._] = await helper.usersInDB();
 
-  test.skip("fails if user attempts to delete someone else's post", async () => {
-    const blogsAtStart = await helper.blogsInDB();
-    // const blogToDelete = blogsAtStart[0];
+    expect(blogToDelete.user.toString()).toEqual(creator.id);
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set(
+        'Authorization',
+        helper.createToken(otherUser.username, otherUser.id)
+      )
+      .expect(401);
   });
 });
 
