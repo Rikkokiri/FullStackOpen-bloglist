@@ -3,15 +3,22 @@ const supertest = require('supertest');
 const app = require('../app');
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const helper = require('./test_helper');
 
 beforeEach(async () => {
   try {
-    await Blog.deleteMany({});
-    await Blog.insertMany(helper.initialBlogs, { ordered: false });
-
     // Add user to database (so there is a user that can be attached to blogs)
     await helper.initDbWithUsers();
+    const users = await User.find({});
+    const user = users.find((u) => u.username === 'root');
+
+    const blogsWithUser = helper.initialBlogs.map((b) => {
+      return { ...b, user: user._id };
+    });
+
+    await Blog.deleteMany({});
+    await Blog.insertMany(blogsWithUser, { ordered: false });
   } catch (error) {
     console.log('Error initalizing database', error);
   }
@@ -48,13 +55,17 @@ describe('viewing a specific blog post', () => {
     const blogsAtStart = await helper.blogsInDB();
     const blogToRequest = blogsAtStart[0];
 
-    const resultBlog = await api
+    const result = await api
       .get(`/api/blogs/${blogToRequest.id}`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
+    const resultWithoutUserDetails = {
+      ...result.body,
+      user: result.body.user.id,
+    };
     const processedBlogToRequest = JSON.parse(JSON.stringify(blogToRequest));
-    expect(resultBlog.body).toEqual(processedBlogToRequest);
+    expect(resultWithoutUserDetails).toEqual(processedBlogToRequest);
   });
 
   test('fails with statuscode 404 if blog post does not exist', async () => {
@@ -132,7 +143,6 @@ describe('creating a new blog post', () => {
       url: 'https://theoatmeal.com/comics/design_hell',
       likes: 100,
     };
-    const [user, ...rest] = await helper.usersInDB();
 
     await api.post('/api/blogs').send(newBlog).expect(401);
 
@@ -148,24 +158,53 @@ describe('deleting a blog post', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDB();
     const blogToDelete = blogsAtStart[0];
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const [user, ..._] = await helper.usersInDB();
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', helper.createToken(user.username, user.id))
+      .expect(204);
 
     const blogsAfter = await helper.blogsInDB();
     expect(blogsAfter).toHaveLength(helper.initialBlogs.length - 1);
   });
 
   test('fails with status code 400 if id is invalid', async () => {
-    await api.delete(`/api/blogs/totallyinvalidid`).expect(400);
+    const [user, ..._] = await helper.usersInDB();
+    await api
+      .delete(`/api/blogs/totallyinvalidid`)
+      .set('Authorization', helper.createToken(user.username, user.id))
+      .expect(400);
   });
 
   test('succeeds with code 204 even if blog does not exist (but id is valid)', async () => {
     const validNonexistantId = await helper.nonExistingId();
-    await api.delete(`/api/blogs/${validNonexistantId}`).expect(204);
+    const [user, ..._] = await helper.usersInDB();
+
+    await api
+      .delete(`/api/blogs/${validNonexistantId}`)
+      .set('Authorization', helper.createToken(user.username, user.id))
+      .expect(204);
   });
 
-  test.skip('can be done by user that created added the post', async () => {});
+  test('fails without token', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    const blogToDelete = blogsAtStart[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(401);
 
-  test.skip("fails if user attempts to delete someone else's post", async () => {});
+    const blogsAfter = await helper.blogsInDB();
+    expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test.skip('can be done by user that created the post', async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    // const blogToDelete = blogsAtStart[0];
+  });
+
+  test.skip("fails if user attempts to delete someone else's post", async () => {
+    const blogsAtStart = await helper.blogsInDB();
+    // const blogToDelete = blogsAtStart[0];
+  });
 });
 
 describe('updating part of a blog post', () => {
@@ -235,6 +274,7 @@ describe('updating whole blog post', () => {
     expect(updatedBlog.body.id);
     expect(updatedBlog.body).toEqual({
       id: blogToUpdate.id,
+      user: blogToUpdate.user.toString(),
       ...newBlogDetails,
     });
 

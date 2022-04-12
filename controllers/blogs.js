@@ -44,8 +44,21 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 });
 
-blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id);
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user;
+  const blog = await Blog.findById(request.params.id);
+
+  // Treat blog not found the same as successful deletion
+  if (!blog) return response.status(204).end();
+
+  // Validate token (only creator of blog can delete it)
+  if (blog.user.toString() !== user._id.toString()) {
+    return response
+      .status(401)
+      .json({ error: 'Only creator of a post can delete it.' });
+  }
+
+  await blog.delete();
   response.status(204).end();
 });
 
