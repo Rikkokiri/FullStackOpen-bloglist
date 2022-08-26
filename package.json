@@ -27,7 +27,7 @@
     "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
-    "mongoose": "^6.2.10"
+    "mongoose": "^6.4.6"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
