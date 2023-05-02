@@ -23,7 +23,7 @@ const totalLikes = (blogs) => {
 const favoriteBlog = (blogs) => {
   if (blogs.length === 0) return undefined;
   return _.chain(blogs)
-    .reduce((prev, curr) => (prev.likes > curr.likes ? prev : curr))
+    .reduce((prev, curr) => (prev.likes >= curr.likes ? prev : curr))
     .pick(['title', 'author', 'likes'])
     .value();
 };
@@ -36,6 +36,8 @@ const favoriteBlog = (blogs) => {
  *  author: "...",
  *  blogs: {number of blogs}
  * }
+ *
+ * Result for empty list will be undefined.
  */
 const mostBlogs = (blogs) => {
   if (blogs.length === 0) return undefined;
@@ -56,6 +58,8 @@ const mostBlogs = (blogs) => {
  *  author: "...",
  *  likes: { sum of likes }
  * }
+ *
+ * Result for empty list will be undefined.
  */
 const mostLikes = (blogs) => {
   if (blogs.length === 0) return undefined;

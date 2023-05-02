@@ -69,6 +69,65 @@ const blogs = [
   },
 ];
 
+const blogsWithTiedWinners = [
+  {
+    _id: '5a422a851b54a676234d17f7',
+    title: 'React patterns',
+    author: 'Michael Chan',
+    url: 'https://reactpatterns.com/',
+    likes: 8,
+    __v: 0,
+  },
+  {
+    _id: '5a422aa71b54a676234d17f8',
+    title: 'Go To Statement Considered Harmful',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+    likes: 7,
+    __v: 0,
+  },
+  {
+    _id: '5a422b891b54a676234d17fa',
+    title: 'First class tests',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+    likes: 12,
+    __v: 0,
+  },
+  {
+    _id: '5a422b3a1b54a676234d17f9',
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12,
+    __v: 0,
+  },
+  {
+    _id: '8b076b3a1b54a676234d17f9',
+    title: 'My hopes of computing science',
+    author: 'Edsger W. Dijkstra',
+    url: 'https://www.cs.utexas.edu/~EWD/transcriptions/EWD07xx/EWD709.html',
+    likes: 11,
+    __v: 0,
+  },
+  {
+    _id: '5a422ba71b54a676234d17fb',
+    title: 'TDD harms architecture',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
+    likes: 0,
+    __v: 0,
+  },
+  {
+    _id: '5a422bc61b54a676234d17fc',
+    title: 'Type wars',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+    likes: 2,
+    __v: 0,
+  },
+];
+
 describe('total likes', () => {
   test('of empty list is zero', () => {
     expect(listHelper.totalLikes([])).toBe(0);
@@ -96,10 +155,18 @@ describe('favorite blog', () => {
     });
   });
 
-  test('any of the blogs with most likes is returned', () => {
+  test('the blog with most likes is returned', () => {
     expect(listHelper.favoriteBlog(blogs)).toEqual({
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
+      likes: 12,
+    });
+  });
+
+  test('first one of the blogs with most likes is returned', () => {
+    expect(listHelper.favoriteBlog(blogsWithTiedWinners)).toEqual({
+      title: 'First class tests',
+      author: 'Robert C. Martin',
       likes: 12,
     });
   });
@@ -120,6 +187,13 @@ describe('most blogs', () => {
   test('name of author and blog count is returned', () => {
     expect(listHelper.mostBlogs(blogs)).toEqual({
       author: 'Robert C. Martin',
+      blogs: 3,
+    });
+  });
+
+  test('if multiple authors have same count, first (in original order) is returned', () => {
+    expect(listHelper.mostBlogs(blogsWithTiedWinners)).toEqual({
+      author: 'Edsger W. Dijkstra',
       blogs: 3,
     });
   });
