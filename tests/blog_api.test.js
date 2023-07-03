@@ -172,7 +172,7 @@ describe('deleting a blog post', () => {
   test('fails with status code 400 if id is invalid', async () => {
     const [user, ..._] = await helper.usersInDB();
     await api
-      .delete(`/api/blogs/totallyinvalidid`)
+      .delete('/api/blogs/totallyinvalidid')
       .set('Authorization', helper.createToken(user.username, user.id))
       .expect(400);
   });
@@ -196,7 +196,7 @@ describe('deleting a blog post', () => {
     expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
   });
 
-  test("fails if user attempts to delete someone else's post", async () => {
+  test('fails if user attempts to delete a post by someone else', async () => {
     const blogsAtStart = await helper.blogsInDB();
     const blogToDelete = blogsAtStart[0];
     const [creator, otherUser, ..._] = await helper.usersInDB();
@@ -255,7 +255,7 @@ describe('updating part of a blog post', () => {
   });
 
   test('fails with status code 400 if id is invalid', async () => {
-    await api.patch(`/api/blogs/totallyinvalidid`).expect(400);
+    await api.patch('/api/blogs/totallyinvalidid').expect(400);
   });
 });
 
@@ -348,7 +348,7 @@ describe('updating whole blog post', () => {
 
   test('if id is invalid, put fails with code 400', async () => {
     await api
-      .put(`/api/blogs/totallyinvalidid`)
+      .put('/api/blogs/totallyinvalidid')
       .send(newBlogDetails)
       .expect(400);
   });

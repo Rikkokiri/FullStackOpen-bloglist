@@ -20,8 +20,12 @@ module.exports = {
     'linebreak-style': ['error', 'unix'],
     'no-console': 0,
     'no-trailing-spaces': 'error',
+    'no-unused-vars': [
+      'error',
+      { varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+    ],
     'object-curly-spacing': ['error', 'always'],
-    quotes: ['error', 'single'],
+    quotes: ['error', 'single', { avoidEscape: true }],
     semi: ['error', 'always'],
     'prettier/prettier': 'error',
   },

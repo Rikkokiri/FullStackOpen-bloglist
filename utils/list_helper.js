@@ -3,7 +3,7 @@ const _ = require('lodash');
 /** Define a dummy function that receives an array of blog posts as a parameter
  * and always returns the value 1.
  */
-const dummy = (blogs) => {
+const dummy = (_blogs) => {
   // ...
   return 1;
 };

@@ -149,7 +149,7 @@ describe('creating user', () => {
 
   test('fails if username is missing', async () => {
     const userAtStart = await helper.usersInDB();
-    const { body } = await api
+    await api
       .post('/api/users')
       .send({
         password: 'forgotprovideusername',
