@@ -1,6 +1,7 @@
 const _ = require('lodash');
 
-/** Define a dummy function that receives an array of blog posts as a parameter
+/**
+ * Define a dummy function that receives an array of blog posts as a parameter
  * and always returns the value 1.
  */
 const dummy = (_blogs) => {
@@ -19,6 +20,8 @@ const totalLikes = (blogs) => {
  * Define a new favoriteBlog function that receives a list of blogs as a parameter.
  * The function finds out which blog has most likes. If there are many top favorites,
  * it is enough to return one of them.
+ *
+ * Result for empty list will be undefined.
  */
 const favoriteBlog = (blogs) => {
   if (blogs.length === 0) return undefined;

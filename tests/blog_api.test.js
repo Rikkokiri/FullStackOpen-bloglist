@@ -94,6 +94,13 @@ describe('creating a new blog post', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
+    expect(response.body).toMatchObject({
+      title: newBlog.title,
+      author: newBlog.author,
+      url: newBlog.url,
+      likes: newBlog.likes,
+    });
+
     const blogsAfter = await helper.blogsInDB();
     expect(blogsAfter).toHaveLength(helper.initialBlogs.length + 1);
 
@@ -102,6 +109,18 @@ describe('creating a new blog post', () => {
 
     const processedUser = JSON.parse(JSON.stringify(user));
     expect(response.body.user).toEqual(processedUser.id);
+
+    // Check that entry in database is correct
+    const newBlogId = response.body.id;
+    const newInDb = blogsAfter.find((b) => b.id === newBlogId);
+
+    expect(newInDb).toMatchObject({
+      title: newBlog.title,
+      author: newBlog.author,
+      url: newBlog.url,
+      likes: newBlog.likes,
+      user: user.id,
+    });
   });
 
   test('blog likes will default to value 0', async () => {
@@ -119,6 +138,38 @@ describe('creating a new blog post', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
     expect(response.body.likes).toEqual(0);
+  });
+
+  test('blog without an url will be rejected', async () => {
+    const newBlog = {
+      author: 'Unknown blogger',
+      title: 'How to write a blog post',
+    };
+    const [user, ..._] = await helper.usersInDB();
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', helper.createToken(user.username, user.id))
+      .send(newBlog)
+      .expect(400);
+    const blogsAfter = await helper.blogsInDB();
+    expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test('blog without a title will be rejected', async () => {
+    const newBlog = {
+      author: 'Unknown blogger',
+      url: 'https://example.com',
+    };
+    const [user, ..._] = await helper.usersInDB();
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', helper.createToken(user.username, user.id))
+      .send(newBlog)
+      .expect(400);
+    const blogsAfter = await helper.blogsInDB();
+    expect(blogsAfter).toHaveLength(helper.initialBlogs.length);
   });
 
   test('blog without url and title will be rejected', async () => {
