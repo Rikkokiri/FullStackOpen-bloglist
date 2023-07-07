@@ -1,10 +1,10 @@
-const listHelper = require('../utils/list_helper');
+const listHelper = require('../utils/list_helper')
 
 test('dummy returns one', () => {
-  const blogs = [];
-  const result = listHelper.dummy(blogs);
-  expect(result).toBe(1);
-});
+  const blogs = []
+  const result = listHelper.dummy(blogs)
+  expect(result).toBe(1)
+})
 
 const listWithOneBlog = [
   {
@@ -15,7 +15,7 @@ const listWithOneBlog = [
     likes: 5,
     __v: 0,
   },
-];
+]
 
 const blogs = [
   {
@@ -66,7 +66,7 @@ const blogs = [
     likes: 2,
     __v: 0,
   },
-];
+]
 
 const blogsWithTiedWinners = [
   {
@@ -125,97 +125,97 @@ const blogsWithTiedWinners = [
     likes: 2,
     __v: 0,
   },
-];
+]
 
 describe('total likes', () => {
   test('of empty list is zero', () => {
-    expect(listHelper.totalLikes([])).toBe(0);
-  });
+    expect(listHelper.totalLikes([])).toBe(0)
+  })
 
   test('when list has only one blog equals the likes of that', () => {
     expect(listHelper.totalLikes(listWithOneBlog)).toBe(
       listWithOneBlog[0].likes
-    );
-  });
+    )
+  })
 
   test('of a bigger list is calculated right', () => {
-    expect(listHelper.totalLikes(blogs)).toBe(36);
-  });
-});
+    expect(listHelper.totalLikes(blogs)).toBe(36)
+  })
+})
 
 describe('favorite blog', () => {
   test('of empty list is undefined', () => {
-    expect(listHelper.favoriteBlog([])).toBe(undefined);
-  });
+    expect(listHelper.favoriteBlog([])).toBe(undefined)
+  })
 
   test('when list has only one blog that is returned', () => {
     expect(listHelper.favoriteBlog(listWithOneBlog)).toEqual({
       title: 'Go To Statement Considered Harmful',
       author: 'Edsger W. Dijkstra',
       likes: 5,
-    });
-  });
+    })
+  })
 
   test('the blog with most likes is returned', () => {
     expect(listHelper.favoriteBlog(blogs)).toEqual({
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
       likes: 12,
-    });
-  });
+    })
+  })
 
   test('first one of the blogs with most likes is returned', () => {
     expect(listHelper.favoriteBlog(blogsWithTiedWinners)).toEqual({
       title: 'First class tests',
       author: 'Robert C. Martin',
       likes: 12,
-    });
-  });
-});
+    })
+  })
+})
 
 describe('most blogs', () => {
   test('of empty list is undefined', () => {
-    expect(listHelper.mostBlogs([])).toBe(undefined);
-  });
+    expect(listHelper.mostBlogs([])).toBe(undefined)
+  })
 
   test('when list has one blog its author and count one is returned', () => {
     expect(listHelper.mostBlogs(listWithOneBlog)).toEqual({
       author: 'Edsger W. Dijkstra',
       blogs: 1,
-    });
-  });
+    })
+  })
 
   test('name of author and blog count is returned', () => {
     expect(listHelper.mostBlogs(blogs)).toEqual({
       author: 'Robert C. Martin',
       blogs: 3,
-    });
-  });
+    })
+  })
 
   test('if multiple authors have same count, first (in original order) is returned', () => {
     expect(listHelper.mostBlogs(blogsWithTiedWinners)).toEqual({
       author: 'Edsger W. Dijkstra',
       blogs: 3,
-    });
-  });
-});
+    })
+  })
+})
 
 describe('most likes', () => {
   test('of empty list is undefined', () => {
-    expect(listHelper.mostLikes([])).toBe(undefined);
-  });
+    expect(listHelper.mostLikes([])).toBe(undefined)
+  })
 
   test('when list has one blog its author and like count are returned', () => {
     expect(listHelper.mostLikes(listWithOneBlog)).toEqual({
       author: 'Edsger W. Dijkstra',
       likes: 5,
-    });
-  });
+    })
+  })
 
   test('author whose blogs alltogether have most likes is returned', () => {
     expect(listHelper.mostLikes(blogs)).toEqual({
       author: 'Edsger W. Dijkstra',
       likes: 17,
-    });
-  });
-});
+    })
+  })
+})

@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const _ = require('lodash')
 
 /**
  * Define a dummy function that receives an array of blog posts as a parameter
@@ -6,15 +6,15 @@ const _ = require('lodash');
  */
 const dummy = (_blogs) => {
   // ...
-  return 1;
-};
+  return 1
+}
 
 /**
  * The function returns the total sum of likes in all of the blog posts in provided list.
  */
 const totalLikes = (blogs) => {
-  return blogs.reduce((sum, curr) => sum + curr.likes, 0);
-};
+  return blogs.reduce((sum, curr) => sum + curr.likes, 0)
+}
 
 /**
  * Define a new favoriteBlog function that receives a list of blogs as a parameter.
@@ -24,12 +24,12 @@ const totalLikes = (blogs) => {
  * Result for empty list will be undefined.
  */
 const favoriteBlog = (blogs) => {
-  if (blogs.length === 0) return undefined;
+  if (blogs.length === 0) return undefined
   return _.chain(blogs)
     .reduce((prev, curr) => (prev.likes >= curr.likes ? prev : curr))
     .pick(['title', 'author', 'likes'])
-    .value();
-};
+    .value()
+}
 
 /**
  * Define a function called mostBlogs that receives an array of blogs as a parameter.
@@ -43,16 +43,16 @@ const favoriteBlog = (blogs) => {
  * Result for empty list will be undefined.
  */
 const mostBlogs = (blogs) => {
-  if (blogs.length === 0) return undefined;
+  if (blogs.length === 0) return undefined
 
   return _.chain(blogs)
     .countBy('author')
     .transform((result, value, key) => {
-      result.push({ author: key, blogs: value });
+      result.push({ author: key, blogs: value })
     }, [])
     .maxBy('blogs')
-    .value();
-};
+    .value()
+}
 
 /**
  * Returns the author, whose blog posts have the largest amount of likes.
@@ -65,18 +65,18 @@ const mostBlogs = (blogs) => {
  * Result for empty list will be undefined.
  */
 const mostLikes = (blogs) => {
-  if (blogs.length === 0) return undefined;
+  if (blogs.length === 0) return undefined
   return _.chain(blogs)
     .groupBy('author')
     .transform((result, blogsByAuthor, author) => {
       result.push({
         author: author,
         likes: _.sumBy(blogsByAuthor, 'likes'),
-      });
+      })
     }, [])
     .maxBy('likes')
-    .value();
-};
+    .value()
+}
 
 module.exports = {
   dummy,
@@ -84,4 +84,4 @@ module.exports = {
   mostBlogs,
   mostLikes,
   totalLikes,
-};
+}

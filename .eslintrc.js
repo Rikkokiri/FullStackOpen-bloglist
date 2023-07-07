@@ -29,4 +29,4 @@ module.exports = {
     semi: ['error', 'always'],
     'prettier/prettier': 'error',
   },
-};
+}

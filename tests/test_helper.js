@@ -1,7 +1,7 @@
-const Blog = require('../models/blog');
-const User = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const initialBlogs = [
   {
@@ -52,12 +52,12 @@ const initialBlogs = [
     likes: 2,
     __v: 0,
   },
-];
+]
 
 const blogsInDB = async () => {
-  const blogs = await Blog.find({});
-  return blogs.map((blog) => blog.toJSON());
-};
+  const blogs = await Blog.find({})
+  return blogs.map((blog) => blog.toJSON())
+}
 
 const nonExistingId = async () => {
   const blog = new Blog({
@@ -65,17 +65,17 @@ const nonExistingId = async () => {
     title: 'willremovethissoon',
     url: 'www.nowhere.com',
     likes: 404,
-  });
-  await blog.save();
-  await blog.remove();
+  })
+  await blog.save()
+  await blog.remove()
 
-  return blog.id;
-};
+  return blog.id
+}
 
 const usersInDB = async () => {
-  const users = await User.find({});
-  return users.map((user) => user.toJSON());
-};
+  const users = await User.find({})
+  return users.map((user) => user.toJSON())
+}
 
 const initialUsers = [
   {
@@ -90,10 +90,10 @@ const initialUsers = [
     name: 'Mike Check',
     password: 'testingtesting',
   },
-];
+]
 
 const initDbWithUsers = async () => {
-  await User.deleteMany({});
+  await User.deleteMany({})
   for (let user of initialUsers) {
     let userObject = new User({
       _id: user.id,
@@ -101,18 +101,15 @@ const initDbWithUsers = async () => {
       username: user.username,
       passwordHash: await bcrypt.hash(user.password, 10),
       __v: 0,
-    });
-    await userObject.save();
+    })
+    await userObject.save()
   }
-};
+}
 
 const createToken = (username, userId) => {
-  const token = jwt.sign(
-    { username: username, id: userId },
-    process.env.SECRET
-  );
-  return `Bearer ${token}`;
-};
+  const token = jwt.sign({ username: username, id: userId }, process.env.SECRET)
+  return `Bearer ${token}`
+}
 
 module.exports = {
   blogsInDB,
@@ -122,4 +119,4 @@ module.exports = {
   nonExistingId,
   usersInDB,
   initialUsers,
-};
+}
