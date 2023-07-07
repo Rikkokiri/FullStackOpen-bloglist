@@ -296,8 +296,13 @@ describe('updating part of a blog post', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
-    expect(updated.body.author).toEqual(newAuthor);
-    expect(updated.body.likes).toEqual(blogToUpdate.likes);
+    expect(updated.body).toMatchObject({
+      title: blogToUpdate.title,
+      url: blogToUpdate.url,
+      likes: blogToUpdate.likes,
+      author: newAuthor,
+      user: blogToUpdate.user.toString(),
+    });
   });
 
   test('fails with statuscode 404 if blog post does not exist', async () => {
