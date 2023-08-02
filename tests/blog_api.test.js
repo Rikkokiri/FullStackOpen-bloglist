@@ -73,7 +73,7 @@ describe('viewing a specific blog post', () => {
     await api.get(`/api/blogs/${validNonexistantId}`).expect(404)
   })
 
-  test('fails with statuscode 400 id is invalid', async () => {
+  test('fails with statuscode 400 if id is invalid', async () => {
     await api.get('/api/blogs/thisiscertainlynotvalidid').expect(400)
   })
 })
@@ -252,6 +252,7 @@ describe('deleting a blog post', () => {
     const [creator, otherUser, ..._] = await helper.usersInDB()
 
     expect(blogToDelete.user.toString()).toEqual(creator.id)
+    expect(blogToDelete.user.toString()).not.toEqual(otherUser.id)
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)

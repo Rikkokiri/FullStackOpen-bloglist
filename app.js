@@ -13,6 +13,7 @@ const middleware = require('./utils/middleware')
 logger.info(`Running in ${process.env.NODE_ENV} mode`)
 logger.info('Connecting to', config.MONGO_URL)
 
+mongoose.set('strictQuery', false)
 mongoose
   .connect(config.MONGO_URL)
   .then(() => {

@@ -1,7 +1,8 @@
-PUT http://localhost:3003/api/blogs/624eb173cbc394158e5dd221
+PUT http://localhost:3003/api/blogs/64c7abe7bf5562c235ef6611
 Content-Type: application/json
 
 {
+    "author": "Ryan Donovan",
     "title": "You should be reading academic computer science papers",
     "url": "https://stackoverflow.blog/2022/04/07/you-should-be-reading-academic-computer-science-papers/",
     "likes": 303
