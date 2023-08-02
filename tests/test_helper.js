@@ -67,7 +67,7 @@ const nonExistingId = async () => {
     likes: 404,
   })
   await blog.save()
-  await blog.remove()
+  await blog.deleteOne()
 
   return blog.id
 }

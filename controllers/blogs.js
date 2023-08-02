@@ -59,7 +59,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
       .json({ error: 'Only creator of a post can delete it.' })
   }
 
-  await blog.delete()
+  await blog.deleteOne()
   response.status(204).end()
 })
 
