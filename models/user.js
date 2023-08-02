@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Username is required'],
     minlength: [3, 'Username must be at least 3 characters long.'],
+    maxlength: [24, 'Username must be at most 24 characters long.'],
+    // Username needs to start with a letter and
+    // can only contain letters, numbers, underscores, hyphens, and periods.
+    match: /^[A-Za-z][A-Za-z0-9_\-\.]*/,
   },
   name: String,
   passwordHash: String,

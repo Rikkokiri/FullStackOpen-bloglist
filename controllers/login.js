@@ -22,7 +22,9 @@ loginRouter.post('/', async (request, response) => {
   }
   const token = jwt.sign(userInfoForToken, process.env.SECRET)
 
-  response.status(200).send({ token, username: user.username, name: user.name }) // TODO: handle missing name or make it required
+  response
+    .status(200)
+    .send({ token, username: user.username, name: user.name ?? '' })
 })
 
 module.exports = loginRouter

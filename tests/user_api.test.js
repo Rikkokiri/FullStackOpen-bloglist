@@ -9,7 +9,7 @@ const helper = require('./test_helper')
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
-    const passwordHash = await bcrypt.hash('sekret', 10)
+    const passwordHash = await bcrypt.hash('secret', 10)
     const user = new User({
       name: 'Test User',
       username: 'root',
@@ -75,7 +75,8 @@ describe('when there is initially one user in db', () => {
       password: 'topsecret',
     }
 
-    await api.post('/api/users').send(newUser).expect(400)
+    const response = await api.post('/api/users').send(newUser).expect(400)
+    expect(response.body.error).toContain('Username is already taken')
 
     const usersAtEnd = await helper.usersInDB()
     expect(usersAtEnd).toHaveLength(userAtStart.length)
@@ -92,7 +93,7 @@ describe('creating user', () => {
   test('succeeds without name of user (different from username)', async () => {
     const userAtStart = await helper.usersInDB()
     const newUser = {
-      username: 'agent007',
+      username: 'agent_007',
       password: 'topsecret',
     }
 
@@ -153,6 +154,30 @@ describe('creating user', () => {
       .post('/api/users')
       .send({
         password: 'forgotprovideusername',
+      })
+      .expect(400)
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(userAtStart.length)
+  })
+
+  test('fails if username does not start with a letter', async () => {
+    const userAtStart = await helper.usersInDB()
+    await api
+      .post('/api/users')
+      .send({
+        password: '_username',
+      })
+      .expect(400)
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(userAtStart.length)
+  })
+
+  test('fails if username contains disallowed characters', async () => {
+    const userAtStart = await helper.usersInDB()
+    await api
+      .post('/api/users')
+      .send({
+        password: 'User+name',
       })
       .expect(400)
     const usersAtEnd = await helper.usersInDB()
