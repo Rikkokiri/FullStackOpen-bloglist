@@ -71,7 +71,12 @@ blogsRouter.patch('/:id', async (request, response) => {
       new: true,
       runValidators: true,
     }
-  )
+  ).populate('user', {
+    id: 1,
+    name: 1,
+    username: 1,
+  })
+
   if (updated) {
     response.json(updated.toJSON())
   } else {
@@ -96,7 +101,12 @@ blogsRouter.put('/:id', async (request, response) => {
     const updated = await Blog.findByIdAndUpdate(request.params.id, body, {
       new: true,
       runValidators: true,
+    }).populate('user', {
+      id: 1,
+      name: 1,
+      username: 1,
     })
+
     if (updated) {
       response.json(updated.toJSON())
     } else {
