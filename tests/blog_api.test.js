@@ -301,7 +301,9 @@ describe('updating part of a blog post', () => {
       url: blogToUpdate.url,
       likes: blogToUpdate.likes,
       author: newAuthor,
-      user: blogToUpdate.user.toString(),
+      user: {
+        id: blogToUpdate.user.toString(),
+      },
     })
   })
 
@@ -334,9 +336,11 @@ describe('updating whole blog post', () => {
       .expect('Content-Type', /application\/json/)
 
     expect(updatedBlog.body.id)
-    expect(updatedBlog.body).toEqual({
+    expect(updatedBlog.body).toMatchObject({
       id: blogToUpdate.id,
-      user: blogToUpdate.user.toString(),
+      user: {
+        id: blogToUpdate.user.toString(),
+      },
       ...newBlogDetails,
     })
 
